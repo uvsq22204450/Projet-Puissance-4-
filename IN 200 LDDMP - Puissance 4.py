@@ -9,10 +9,6 @@ from random import randint
 
 
 tour_joueur = randint(1,2) #choisi aléatoirement le joueur qui commence
-HEIGHT = 6 #la hauteur de notre plateau
-WIDTH = 7 #la largeur de notre plateau
-GAGNE = 4 #le nombre de pièces qu'il faut pour gagner
-NB_CASE = HEIGHT * WIDTH
 NB_COUP = 0 #nombre de coup joué 
 PARTIE = 0 
 DERNIER_COUP_I = 0 #la coordonnée i du dernier coupe joué
@@ -33,7 +29,7 @@ def widget_acceuil():
 
     acceuil_jouer = tk.Button(racine, command = jouer, text = "JOUER", font=("helvetica", "40"), relief = "flat", bg = "#141414", fg = "gray69", width = 15)
     acceuil_charger_partie = tk.Button(racine, command = importer, text = "IMPORTER", font=("helvetica", "40"), relief = "flat", bg = "#141414", fg = "gray69", width = 15)
-    partie_normale = tk.Button(racine, command = lambda : plateau(HEIGHT, WIDTH, GAGNE), text = "PARTIE NORMALE", font=("helvetica", "40"), relief = "flat", bg = "#141414", fg = "gray69", width = 15)
+    partie_normale = tk.Button(racine, command = lambda : plateau(6, 7, 4), text = "PARTIE NORMALE", font=("helvetica", "40"), relief = "flat", bg = "#141414", fg = "gray69", width = 15)
     partie_personnalisee = tk.Button(racine, command = partie_perso, text = "PARTIE PERSO", font=("helvetica", "40"), relief = "flat", bg = "#141414", fg = "gray69", width = 15)
     entree_HEIGHT = tk.Entry(racine, text = "Le nombre de case en hauteur", font=("helvetica", "20"), relief = "flat", fg = "#141414", bg = "gray69")
     entree_WIDTH = tk.Entry(racine, text = "Le nombre de case en largeur", font=("helvetica", "20"), relief = "flat", fg = "#141414", bg = "gray69")
@@ -76,8 +72,8 @@ def widget_plateau():
     tour.bind("<Leave>", visuel_tour_joueur_sortie)
 
 def acceuil():
-    acceuil_jouer.place(relx= 0.5, rely = 0.4, anchor = "center")
-    acceuil_charger_partie.place(relx= 0.5, rely = 0.6, anchor = "center")
+    acceuil_jouer.place(relx = 0.5, rely = 0.4, anchor = "center")
+    acceuil_charger_partie.place(relx = 0.5, rely = 0.6, anchor = "center")
 
 def jouer():
     acceuil_jouer.place_forget()

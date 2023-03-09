@@ -9,13 +9,9 @@ from random import randint
 
 
 tour_joueur = randint(1,2) #choisi aléatoirement le joueur qui commence
-HEIGHT = int(input("Combien de cases de haut?")) #la hauteur de notre plateau
-WIDTH = int(input("Combien de cases de large?")) #la largeur de notre plateau
-GAGNE = 0 
-a = 100000
-while (a > HEIGHT) and (a > WIDTH):
-    a = int(input("Combien de pièces faut-il pour gagner?"))
-GAGNE = a #le nombre de pièces qu'il faut pour gagner
+HEIGHT = 6 #la hauteur de notre plateau
+WIDTH = 7 #la largeur de notre plateau
+GAGNE = 4 #le nombre de pièces qu'il faut pour gagner
 NB_CASE = HEIGHT * WIDTH
 NB_COUP = 0 #nombre de coup joué 
 PARTIE = 0 
@@ -25,58 +21,146 @@ FIRST = tour_joueur #la couleur du joueur qui joue en premier
 R = 0 #nombre de victoire du joueur rouge
 J = 0 #nombre de victoire du joueur jaune
 
-def plateau():
-    '''création du nouveau plateau'''
+def widget_acceuil():
+    global acceuil_jouer
+    global acceuil_charger_partie
+    global partie_normale
+    global partie_personnalisee
+    global entree_WIDTH
+    global entree_HEIGHT
+    global entree_GAGNE
+    global valider
 
+    acceuil_jouer = tk.Button(racine, command = jouer, text = "JOUER", font=("helvetica", "40"), relief = "flat", bg = "#141414", fg = "gray69", width = 15)
+    acceuil_charger_partie = tk.Button(racine, command = importer, text = "IMPORTER", font=("helvetica", "40"), relief = "flat", bg = "#141414", fg = "gray69", width = 15)
+    partie_normale = tk.Button(racine, command = lambda : plateau(HEIGHT, WIDTH, GAGNE), text = "PARTIE NORMALE", font=("helvetica", "40"), relief = "flat", bg = "#141414", fg = "gray69", width = 15)
+    partie_personnalisee = tk.Button(racine, command = partie_perso, text = "PARTIE PERSO", font=("helvetica", "40"), relief = "flat", bg = "#141414", fg = "gray69", width = 15)
+    entree_HEIGHT = tk.Entry(racine, text = "Le nombre de case en hauteur", font=("helvetica", "20"), relief = "flat", fg = "#141414", bg = "gray69")
+    entree_WIDTH = tk.Entry(racine, text = "Le nombre de case en largeur", font=("helvetica", "20"), relief = "flat", fg = "#141414", bg = "gray69")
+    entree_GAGNE = tk.Entry(racine, text = "Le nombre de pion pour gagner", font=("helvetica", "20"), relief = "flat", fg = "#141414", bg = "gray69")
+    valider = tk.Button(racine, command = valider_option, text = "VALIDER", font=("helvetica", "20"), relief = "flat", bg = "#141414", fg = "gray69", width = 15)
 
-    global PARTIE
+    acceuil_jouer.bind("<Enter>", lambda event : couleur_entree(event, acceuil_jouer))
+    acceuil_jouer.bind("<Leave>", lambda event : couleur_sortie(event, acceuil_jouer))
+    acceuil_charger_partie.bind("<Enter>", lambda event : couleur_entree(event, acceuil_charger_partie))
+    acceuil_charger_partie.bind("<Leave>", lambda event : couleur_sortie(event, acceuil_charger_partie))
+    partie_normale.bind("<Enter>", lambda event : couleur_entree(event, partie_normale))
+    partie_normale.bind("<Leave>", lambda event : couleur_sortie(event, partie_normale))
+    partie_personnalisee.bind("<Enter>", lambda event : couleur_entree(event, partie_personnalisee))
+    partie_personnalisee.bind("<Leave>", lambda event : couleur_sortie(event, partie_personnalisee))
+    valider.bind("<Enter>", lambda event : couleur_entree(event, valider))
+    valider.bind("<Leave>", lambda event : couleur_sortie(event, valider))
+
+def widget_plateau():
     global fond_plateau
-    global NB_COUP
-    global L
     global remake
-    global victoire
     global draw
-    global tour_joueur
-    global FIRST
+    global victoire
     global tour
     global undo
     global score
-    L = [[0] * WIDTH for i in range(HEIGHT)]
-    PARTIE = 0
-    NB_COUP = 0
 
-
-    fond_plateau.destroy() # destruction des anciens éléments
-    remake.destroy()
-    victoire.destroy()
-    draw.destroy()
-    tour.destroy()
-    undo.destroy()
-
+    fond_plateau = tk.Label(racine)
+    remake = tk.Button(sous_page, text="REVANCHE", command = lambda : plateau(HEIGHT, WIDTH, GAGNE), font=("helvetica", "10"), relief = "flat", bg = "#141414", fg = "gray69", width = 15) # création de bouton revanche
+    draw = tk.Button(sous_page, text="ÉGALITÉ...",  font=("helvetica", "10"), bg = "#141414", fg = "gray69", width = 15, relief = "flat") # création texte égalité
+    victoire = tk.Button(sous_page, text=" ",  font=("helvetica", "10"), bg = "#141414", relief = "flat", width = 15) #création du texte de victoire
+    tour = tk.Button(sous_page, relief = "flat", font=("helvetica", "10"), width = 15, fg = "#141414")
+    undo = tk.Button(sous_page, text="ANNULER", font=("helvetica", "10"), command = annuler_coup,relief = "flat", bg = "#141414", fg = "gray69",width = 15)
+    score = tk.Button(sous_page, relief = "flat", text="R " + str(R) + " | J " + str(J), font=("helvetica", "10"), bg = "#141414", fg = "gray69",width = 15)
     
+    remake.bind("<Enter>", lambda event : couleur_entree(event, remake))
+    remake.bind("<Leave>", lambda event : couleur_sortie(event, remake))
+    undo.bind("<Enter>", lambda event : couleur_entree(event, undo))
+    undo.bind("<Leave>", lambda event : couleur_sortie(event, undo))
+    tour.bind("<Enter>", visuel_tour_joueur_entree)
+    tour.bind("<Leave>", visuel_tour_joueur_sortie)
+
+def acceuil():
+    acceuil_jouer.place(relx= 0.5, rely = 0.4, anchor = "center")
+    acceuil_charger_partie.place(relx= 0.5, rely = 0.6, anchor = "center")
+
+def jouer():
+    acceuil_jouer.place_forget()
+    acceuil_charger_partie.place_forget()
+    partie_normale.place(relx= 0.5, rely = 0.4, anchor = "center")
+    partie_personnalisee.place(relx= 0.5, rely = 0.6, anchor = "center")
+
+def partie_perso():
+    partie_normale.place_forget()
+    partie_personnalisee.place_forget()
+    entree_HEIGHT.grid()
+    entree_WIDTH.grid()
+    entree_GAGNE.grid()
+    valider.grid()
+
+def valider_option():
+    global HEIGHT
+    global WIDTH
+    global GAGNE
+
+    HEIGHT = int(entree_HEIGHT.get())
+    WIDTH = int(entree_WIDTH.get())
+    GAGNE = int(entree_GAGNE.get())
+
+    entree_GAGNE.grid_forget()
+    entree_HEIGHT.grid_forget()
+    entree_WIDTH.grid_forget()
+    valider.grid_forget()
+    partie_normale.place(relx= 0.5, rely = 0.4, anchor = "center")
+    partie_personnalisee.place(relx= 0.5, rely = 0.6, anchor = "center")
+    plateau(HEIGHT, WIDTH, GAGNE)
+    
+def plateau(haut, larg, puissance):
+    '''création du nouveau plateau'''
+    global GAGNE
+    global HEIGHT
+    global WIDTH
+    global NB_CASE
+
+    GAGNE = puissance
+    HEIGHT = haut
+    WIDTH = larg
+    NB_CASE = HEIGHT * WIDTH
+
+    partie_personnalisee.place_forget()
+    partie_normale.place_forget()
+    draw.grid_forget()
+    victoire.grid_forget()
+
+
+    plateau_visuel()
+    plateau_parametre()
+    plateau_matrice()
+    
+    tour.grid(column = 0, row = 1)
+    undo.grid(column = 0, row = 2)
+    score.grid(column = 0, row = 0)
+    fond_plateau.grid(column = 0, row = 0)
+    fond_plateau.bind("<Button-1>", placement)
+
+def plateau_visuel():
+    global fond_plateau
+
+
+    fond_plateau.destroy() # destruction de l'ancien plateau
+
     fond_plateau = tk.Canvas(racine, bg="gray", height = 100*HEIGHT, width = 100*WIDTH)  # création du plateau
     for i in range(WIDTH):
         fond_plateau.create_line((i*100, 0), (i*100, HEIGHT*100), fill="white", width=1)
     for j in range(HEIGHT):
         fond_plateau.create_line((0, j*100), (WIDTH*100, j*100), fill="white", width=1)
 
+def plateau_matrice():
+    global L
+    L = [[0] * WIDTH for i in range(HEIGHT)] #liste à 0
 
-    remake = tk.Button(sous_page, text="REVANCHE", command = plateau, font=("helvetica", "10"), relief = "flat", bg = "#141414", fg = "gray69", activebackground = "gray99", activeforeground = "#141414", width = 15) # création de bouton revanche
-    draw = tk.Button(sous_page, text="ÉGALITÉ...",  font=("helvetica", "10"), bg = "#141414", fg = "gray69", width = 15, relief = "flat") # création texte égalité
-    victoire = tk.Button(sous_page, text=" ",  font=("helvetica", "10"), bg = "#141414", relief = "flat", width = 15) #création du texte de victoire
-    tour = tk.Button(sous_page, relief = "flat", font=("helvetica", "10"), width = 15, fg = "#141414")
-    tour.grid(column = 0, row = 1)
-    undo = tk.Button(sous_page, text="ANNULER", font=("helvetica", "10"), command = annuler_coup,relief = "flat", bg = "#141414", fg = "gray69",width = 15)
-    undo.grid(column = 0, row = 2)
-    score = tk.Button(sous_page, relief = "flat", text="R " + str(R) + " | J " + str(J), font=("helvetica", "10"), bg = "#141414", fg = "gray69",width = 15)
-    score.grid(column = 0, row = 0)
-
-
-    fond_plateau.grid(column = 0, row = 0)
-    fond_plateau.bind("<Button-1>", placement)
-    remake.bind("<Enter>", b_couleur)
-    remake.bind("<Leave>", b_couleur_2)
-
+def plateau_parametre():
+    global PARTIE
+    global NB_COUP
+    global tour_joueur
+    global FIRST
+    PARTIE = 0
+    NB_COUP = 0
     if FIRST == 1:
         tour_joueur = 2
         FIRST = 2
@@ -253,56 +337,31 @@ def importer():
 def sauvegarder():
     pass
 
-def b_couleur(event):
-    remake.config(bg = "gray69", fg = "#141414")
+def couleur_entree(event, widget):
+    widget.config(bg = "gray69", fg = "#141414")
 
-def b_couleur_2(event):
-    remake.config(fg = "gray69", bg = "#141414")
+def couleur_sortie(event, widget):
+    widget.config(fg = "gray69", bg = "#141414")
 
-def u_couleur(event):
-    undo.config(bg = "gray69", fg = "#141414")
-
-def u_couleur_2(event):
-    undo.config(fg = "gray69", bg = "#141414")
-
-def tour_du_joueur(event):
+def visuel_tour_joueur_entree(event):
         tour.config(text="TOUR DU JOUEUR", bg = "gray69")
 
-def tour_du_joueur_2(event):
+def visuel_tour_joueur_sortie(event):
     if tour_joueur == 1:
         tour.config(bg = "yellow2", text ="")
     else:
         tour.config(bg = "#f34246", text = "")
 
 # création de la page
-
 racine = tk.Tk()
 racine.title("Puissance 4")
+racine.geometry("1000x1000")
 sous_page = tk.Frame(racine, bg = "#141414") #endroit des boutons
-menu_barre = tk.Menu()
-menuFichier  = tk.Menu(menu_barre, tearoff = 0) #barre pour sauvegarder
-menu_barre.add_cascade(label="Fichier", menu=menuFichier)
-menuFichier.add_command(label="Enregister", command = sauvegarder) 
-menuFichier.add_command(label="Importer", command = importer)
-racine.config(menu = menu_barre)
 racine.config(bg = "#141414")
 sous_page.grid(column=1, row = 0)
 
-#Pour permettre à la fonction plateau le .destroy
-fond_plateau = tk.Label(racine)
-victoire = tk.Label(racine)
-draw = tk.Label(racine)
-remake = tk.Label(racine)
-tour = tk.Label(racine)
-undo = tk.Label(racine)
-score = tk.Label(racine)
-
-plateau() #création du plateau
-
-#fonction visuelle des deux boutons
-undo.bind("<Enter>", u_couleur)
-undo.bind("<Leave>", u_couleur_2)
-tour.bind("<Enter>", tour_du_joueur)
-tour.bind("<Leave>", tour_du_joueur_2)
+widget_plateau()
+widget_acceuil()
+acceuil()
 
 racine.mainloop() # Lancement de la boucle principale

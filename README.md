@@ -1,4 +1,5 @@
-# Projet puissance 4 Thomas TRAN, Lis Ainhoa ALFARO LANDA, Hugo BOUGNIAC, Clémentine HELLEHOURACH
+# Projet puissance 4 Thomas TRAN, Lis Ainhoa ALFARO LANDA, Hugo BOUGNIAC, Clémentine HELLEGOUARCH
+  LDDMPTD01 
 
 ## Description rapide de projet
 

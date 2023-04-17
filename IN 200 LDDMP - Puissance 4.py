@@ -540,6 +540,47 @@ def triche():
         remake.grid()
         victoire.grid()
 
+        
+        
+        
+n=int(input())
+set=0
+fichier = open("sauvegarde.txt", "r")
+save = fichier.read()
+score = tk.Button(sous_page, relief = "flat", text="R " + str(R) + " | J " + str(J), font=("helvetica", "10"), bg = "#141414", fg = "gray69",width = 15, state = "disabled")
+victoire = tk.Button(sous_page, text=" ",  font=("helvetica", "10"), bg = "#141414", relief = "flat", width = 15, state = "disabled")
+remake = tk.Button(sous_page, text="REVANCHE", command = revanche, font=("helvetica", "10"), relief = "flat", bg = "#141414", fg = "gray69", width = 15)
+GAGNE= int(save[2])
+
+def set_gagnant(jaune,rouge):
+    J = jaune
+    R = rouge
+    if J == GAGNE*n :
+        score.config(text="R " + str(R) + " | J " + str(J))
+        victoire.config(text = "JAUNE GAGNE", fg = "yellow2")
+        remake.grid()
+        victoire.grid()
+        print("Le joueur jouant des pions jaune gagne le set.")
+        set = set+1
+    if R == GAGNE*n:
+        score.config(text="R " + str(R) + " | J " + str(J))
+        victoire.config(text = "ROUGE GAGNE", fg = "#f34246")
+        remake.grid()
+        victoire.grid()
+        print("Le joueur jouant des pions rouge gagne le set.")
+        set = set+1
+
+Debut_partie = 0
+def altener(jaune,rouge):
+    J = jaune
+    R = rouge
+    if J == Debut_partie :
+        PARTIE = PARTIE + 1
+        R == Debut_partie
+    else :
+        J == Debut_partie        
+        
+        
 # création de la page
 racine = tk.Tk()
 racine.title("Puissance 4")
